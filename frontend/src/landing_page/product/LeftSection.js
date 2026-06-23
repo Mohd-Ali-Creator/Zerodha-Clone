@@ -1,20 +1,31 @@
-import React from 'react';
+import React from "react";
 
-function LeftSection() {
+function LeftSection({
+    imageURL,
+    productName,
+    productDescription,
+    tryDemo,
+    learnMore,
+    googlePlay,
+    appStore
+}) {
     return (
-        <div className='container mt-5 p-5'>
-            <div className='row '>
-                <div className='col-md-6 mt-5'>
-                    <h2>Console</h2>
-                    <p>
-                        The central dashboard for your Zerodha account. Gain insights into your trades and investments with in-depth reports and visualisations.
-                    </p>
-                    <a href="/" className='text-decoration-none' >Learn More
-                        <i style={{ fontFamily: "Arial" }}>&#8594;</i> </a>
+        <div className="container">
+            <div className="row">
+                <div className="col-6 p-3">
+                    <img src={imageURL} />
                 </div>
-                <div className='col-md-6' >
-                    <img src='media/images/products-console.png' alt="product-console" />
-
+                <div className="col-6 p-3">
+                    <h1>{productName}</h1>
+                    <p>{productDescription}</p>
+                    <div>
+                        <a href={tryDemo}>Try Demo <i style={{ fontFamily: "Arial" }}>&#8594;</i></a>
+                        <a href={learnMore} style={{ marginLeft: "50px" }}>Learn More <i style={{ fontFamily: "Arial" }}>&#8594;</i></a>
+                    </div>
+                    <div>
+                        <a href={googlePlay}><img src="media/images/google-play-badge.svg" /></a>
+                        <a href={appStore} style={{ marginLeft: "50px" }}> <img src="media\images\appstore-badge.svg" /></a>
+                    </div>
                 </div>
             </div>
         </div>
