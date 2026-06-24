@@ -9,6 +9,8 @@ const { HoldingsModel } = require("./model/HoldingsModel");
 const { PositionsModel } = require("./model/PositionsModel");
 const { OrdersModel } = require("./model/OrdersModel");
 const { UserModel } = require("./model/UserModel");
+const { AlertsModel } = require("./model/AlertsModel");
+const { NotesModel } = require("./model/NotesModel");
 const authMiddleware = require("./middleware/authMiddleware");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -513,6 +515,243 @@ app.get("/profile", authMiddleware, async (req, res) => {
     res.json(user);
   } catch (error) {
     console.error("Profile fetch error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Alerts Routes
+app.get("/alerts", authMiddleware, async (req, res) => {
+  try {
+    const alerts = await AlertsModel.find({ userId: req.user.id }).sort({ createdAt: -1 });
+    res.json(alerts);
+  } catch (error) {
+    console.error("Fetch alerts error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+app.post("/alerts", authMiddleware, async (req, res) => {
+  try {
+    const { symbol, targetPrice, condition } = req.body;
+    if (!symbol || !targetPrice || !condition) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+    const newAlert = new AlertsModel({
+      symbol: symbol.toUpperCase(),
+      targetPrice: Number(targetPrice),
+      condition,
+      userId: req.user.id,
+      status: "active"
+    });
+    await newAlert.save();
+    res.status(201).json(newAlert);
+  } catch (error) {
+    console.error("Create alert error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+app.put("/alerts/:id", authMiddleware, async (req, res) => {
+  try {
+    const { status, triggerPrice } = req.body;
+    const alert = await AlertsModel.findOneAndUpdate(
+      { _id: req.params.id, userId: req.user.id },
+      { status, triggerPrice, triggeredAt: status === "triggered" ? new Date() : undefined },
+      { new: true }
+    );
+    if (!alert) {
+      return res.status(404).json({ message: "Alert not found" });
+    }
+    res.json(alert);
+  } catch (error) {
+    console.error("Update alert error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+app.delete("/alerts/:id", authMiddleware, async (req, res) => {
+  try {
+    const alert = await AlertsModel.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
+    if (!alert) {
+      return res.status(404).json({ message: "Alert not found" });
+    }
+    res.json({ message: "Alert deleted successfully" });
+  } catch (error) {
+    console.error("Delete alert error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Notes Routes
+app.get("/notes", authMiddleware, async (req, res) => {
+  try {
+    const notes = await NotesModel.find({ userId: req.user.id }).sort({ createdAt: -1 });
+    res.json(notes);
+  } catch (error) {
+    console.error("Fetch notes error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+app.post("/notes", authMiddleware, async (req, res) => {
+  try {
+    const { symbol, title, content } = req.body;
+    if (!symbol || !title || !content) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+    const newNote = new NotesModel({
+      symbol: symbol.toUpperCase(),
+      title,
+      content,
+      userId: req.user.id
+    });
+    await newNote.save();
+    res.status(201).json(newNote);
+  } catch (error) {
+    console.error("Create note error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+app.delete("/notes/:id", authMiddleware, async (req, res) => {
+  try {
+    const note = await NotesModel.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
+    if (!note) {
+      return res.status(404).json({ message: "Note not found" });
+    }
+    res.json({ message: "Note deleted successfully" });
+  } catch (error) {
+    console.error("Delete note error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// News Feed
+app.get("/news", async (req, res) => {
+  try {
+    const news = [
+      {
+        title: "Federal Reserve hints at interest rate cuts in upcoming cycle",
+        summary: "Market analysts expect a boost in credit liquidity as treasury yields ease down to 4.2% globally.",
+        source: "Bloomberg",
+        date: new Date(Date.now() - 3600000 * 2).toLocaleDateString(),
+      },
+      {
+        title: "IT Sector rally led by strong execution in cloud contracts",
+        summary: "Major IT firms like TCS and INFY report stable growth in European consulting markets.",
+        source: "Economic Times",
+        date: new Date(Date.now() - 3600000 * 5).toLocaleDateString(),
+      },
+      {
+        title: "Reliance retail segment records double-digit margin growth",
+        summary: "The conglomerate expands logistics network to capture consumer demand in tier-2 cities.",
+        source: "Reuters",
+        date: new Date(Date.now() - 3600000 * 8).toLocaleDateString(),
+      },
+      {
+        title: "Banking indexes gain momentum as credit demand hits fresh peak",
+        summary: "SBI and major private banks post lower net non-performing asset (NPA) ratios for this quarter.",
+        source: "LiveMint",
+        date: new Date(Date.now() - 3600000 * 12).toLocaleDateString(),
+      },
+      {
+        title: "Green Energy stocks witness surge in institutional inflows",
+        summary: "Tata Power and peer utilities secure capital pledges for new solar installations in Gujarat.",
+        source: "Financial Express",
+        date: new Date(Date.now() - 3600000 * 24).toLocaleDateString(),
+      }
+    ];
+    res.json(news);
+  } catch (error) {
+    res.status(500).json({ message: "Error loading news" });
+  }
+});
+
+// Historical Price data endpoint
+app.get("/historical", async (req, res) => {
+  try {
+    const { symbol } = req.query;
+    if (!symbol) {
+      return res.status(400).json({ message: "Symbol parameter is required" });
+    }
+
+    const tickerMap = {
+      INFY: "INFY.NS",
+      ONGC: "ONGC.NS",
+      TCS: "TCS.NS",
+      KPITTECH: "KPITTECH.NS",
+      QUICKHEAL: "QUICKHEAL.NS",
+      WIPRO: "WIPRO.NS",
+      RELIANCE: "RELIANCE.NS",
+      HUL: "HUL.NS",
+      SBIN: "SBIN.NS",
+      HDFCBANK: "HDFCBANK.NS",
+      BHARTIARTL: "BHARTIARTL.NS",
+      TATAPOWER: "TATAPOWER.NS",
+      ITC: "ITC.NS",
+    };
+
+    const uppercaseSymbol = symbol.toUpperCase();
+    const yahooTicker = tickerMap[uppercaseSymbol] || `${uppercaseSymbol}.NS`;
+
+    // Try fetching live historical data
+    try {
+      const today = new Date();
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(today.getDate() - 40); // fetch slightly more to get 30 trading days
+
+      const queryOptions = {
+        period1: thirtyDaysAgo.toISOString().split("T")[0],
+        interval: "1d",
+      };
+
+      const result = await yahooFinance.historical(yahooTicker, queryOptions);
+      if (result && result.length > 0) {
+        const formattedData = result.map((item) => ({
+          date: new Date(item.date).toLocaleDateString("en-IN", { day: "numeric", month: "short" }),
+          close: item.close,
+        }));
+        return res.json(formattedData);
+      }
+    } catch (e) {
+      console.warn(`Could not fetch live history for ${yahooTicker}, falling back to mock historical data.`);
+    }
+
+    // Fallback: Generate mock price trend based on stock ticker
+    const stockBasePrices = {
+      INFY: 1550,
+      ONGC: 116,
+      TCS: 3190,
+      KPITTECH: 266,
+      QUICKHEAL: 308,
+      WIPRO: 577,
+      RELIANCE: 2110,
+      HUL: 512,
+      SBIN: 430,
+      HDFCBANK: 1520,
+      BHARTIARTL: 541,
+      TATAPOWER: 124,
+      ITC: 207,
+    };
+
+    const basePrice = stockBasePrices[uppercaseSymbol] || 1000;
+    const mockData = [];
+    let price = basePrice * 0.95; // start slightly lower to simulate a rise
+
+    for (let i = 25; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i * 1.4); // spread out dates to look like trading days
+      const randChange = (Math.random() - 0.47) * 0.025; // upward bias
+      price = price * (1 + randChange);
+      mockData.push({
+        date: date.toLocaleDateString("en-IN", { day: "numeric", month: "short" }),
+        close: Number(price.toFixed(2)),
+      });
+    }
+
+    res.json(mockData);
+  } catch (error) {
+    console.error("Historical fetch error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });

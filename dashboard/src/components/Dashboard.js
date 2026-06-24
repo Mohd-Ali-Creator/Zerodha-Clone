@@ -10,6 +10,7 @@ import Summary from "./Summery";
 import WatchList from "./WatchList";
 import AIInsights from "./AIInsights";
 import Calculators from "./Calculators";
+import AlertsNotes from "./AlertsNotes";
 import { GeneralContextProvider } from "./GeneralContext";
 
 const Dashboard = () => {
@@ -28,6 +29,7 @@ const Dashboard = () => {
           <Route path="/apps" element={<Apps />} />
           <Route path="/ai-insights" element={<AIInsights />} />
           <Route path="/calculators" element={<Calculators />} />
+          <Route path="/alerts-notes" element={<AlertsNotes />} />
         </Routes>
       </div>
     </div>

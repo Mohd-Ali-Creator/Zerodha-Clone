@@ -139,6 +139,17 @@ const Menu = ({ user }) => {
               </p>
             </Link>
           </li>
+          <li>
+            <Link
+              style={{ textDecoration: "none" }}
+              to="/alerts-notes"
+              onClick={() => handleMenuClick(8)}
+            >
+              <p className={selectedMenu === 8 ? activeMenuClass : menuClass}>
+                {t("alertsNotes")}
+              </p>
+            </Link>
+          </li>
         </ul>
         <hr />
         <div className="profile-container">
