@@ -13,7 +13,8 @@ const authMiddleware = require("./middleware/authMiddleware");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.JWT_SECRET || "secret_key_zerodha_clone";
-const yahooFinance = require("yahoo-finance2").default;
+const YahooFinance = require("yahoo-finance2").default;
+const yahooFinance = new YahooFinance();
 
 const PORT = process.env.PORT || 3002;
 const uri = process.env.MONGO_URL;
