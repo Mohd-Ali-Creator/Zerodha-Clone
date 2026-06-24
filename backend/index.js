@@ -201,17 +201,33 @@ app.get("/allPositions", async (req, res) => {
   res.json(allPositions);
 });
 
-app.post("/newOrder", async (req, res) => {
-  let newOrder = new OrdersModel({
-    name: req.body.name,
-    qty: req.body.qty,
-    price: req.body.price,
-    mode: req.body.mode,
-  });
+app.post("/newOrder", authMiddleware, async (req, res) => {
+  try {
+    let newOrder = new OrdersModel({
+      name: req.body.name,
+      qty: req.body.qty,
+      price: req.body.price,
+      mode: req.body.mode,
+      userId: req.user.id,
+    });
 
-  newOrder.save();
+    await newOrder.save();
+    res.status(201).send("Order saved!");
+  } catch (error) {
+    console.error("Error saving order:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 
-  res.send("Order saved!");
+app.get("/allOrders", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const allOrders = await OrdersModel.find({ userId }).sort({ createdAt: -1 });
+    res.json(allOrders);
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 });
 
 // Authentication Routes

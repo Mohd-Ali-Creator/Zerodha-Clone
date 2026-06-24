@@ -1,16 +1,89 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const Orders = () => {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    axios
+      .get("http://localhost:3002/allOrders", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        setOrders(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching orders:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="orders" style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "50vh" }}>
+        <p>Loading your orders...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="orders">
-      <div className="no-orders">
-        <p>You haven't placed any orders today</p>
+      {orders.length === 0 ? (
+        <div className="no-orders">
+          <p>You haven't placed any orders today</p>
+          <Link to={"/"} className="btn">
+            Get started
+          </Link>
+        </div>
+      ) : (
+        <div className="order-table">
+          <h3 className="title">Orders ({orders.length})</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Instrument</th>
+                <th>Qty.</th>
+                <th>Price</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map((order, index) => {
+                const formattedTime = new Date(order.createdAt).toLocaleString(undefined, {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  second: '2-digit',
+                  day: 'numeric',
+                  month: 'short',
+                });
+                
+                const badgeStyle = order.mode === "BUY" 
+                  ? { background: "rgb(222, 243, 224)", color: "rgb(76, 175, 80)", width: "60px", padding: "2px 0", borderRadius: "3px", fontWeight: "bold" }
+                  : { width: "60px", padding: "2px 0", borderRadius: "3px", fontWeight: "bold" };
 
-        <Link to={"/"} className="btn">
-          Get started
-        </Link>
-      </div>
+                return (
+                  <tr key={order._id || index}>
+                    <td>
+                      <p style={badgeStyle}>{order.mode}</p>
+                    </td>
+                    <td style={{ fontWeight: 500 }}>{order.name}</td>
+                    <td>{order.qty}</td>
+                    <td>₹{order.price.toFixed(2)}</td>
+                    <td>{formattedTime}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };
