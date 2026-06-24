@@ -32,6 +32,7 @@ export const translations = {
     loadingKite: "Loading Kite...",
     loadingOrders: "Loading your orders...",
     activeWatchlistCount: "items",
+    
     // AI Insights
     aiInsights: "AI Insights",
     askAI: "Ask AI about your portfolio...",
@@ -43,6 +44,7 @@ export const translations = {
     aiStatus: "Active Analyser",
     aiPlaceholder: "Ask anything about your investments...",
     aiDefaultGreeting: "Hello! I am your AI Investment Advisor. Click on any suggestion below or type a query about your holdings to get started!",
+    
     // Calculators
     calculators: "Calculators",
     brokerageCalc: "Brokerage",
@@ -76,6 +78,7 @@ export const translations = {
     intradayMIS: "Intraday (MIS - 5x Leverage)",
     marginRequiredLabel: "Margin Required",
     leverageApplied: "Leverage Applied",
+    
     // Alerts & Notes
     alertsNotes: "Alerts & Notes",
     priceReminders: "Reminders",
@@ -100,7 +103,19 @@ export const translations = {
     noNotes: "No research notes saved yet",
     alertBannerText: "Price trigger reached for",
     date: "Date",
-    closePrice: "Close Price"
+    closePrice: "Close Price",
+    
+    // Ecosystem Apps
+    exploreApps: "Ecosystem Apps",
+    exploreDesc: "Explore third-party applications integrated with your Kite account.",
+    connect: "Connect",
+    connected: "Connected",
+    smallcaseDesc: "Thematic investment portfolios created by financial experts.",
+    sensibullDesc: "India's largest options trading platform with smart tools and advice.",
+    streakDesc: "Create, backtest, and deploy algorithmic trading strategies.",
+    goldenpiDesc: "Invest in fixed-income corporate bonds and debentures.",
+    tijoriDesc: "Fundamental analysis and tracking of corporate financials.",
+    kiteconnectDesc: "Developer APIs for automated trading systems."
   },
   hi: {
     dashboard: "डैशबोर्ड",
@@ -135,6 +150,7 @@ export const translations = {
     loadingKite: "काइट लोड हो रहा है...",
     loadingOrders: "आपके ऑर्डर लोड हो रहे हैं...",
     activeWatchlistCount: "शेयर",
+    
     // AI Insights
     aiInsights: "एआई इनसाइट्स",
     askAI: "अपने पोर्टफोलियो के बारे में एआई से पूछें...",
@@ -146,6 +162,7 @@ export const translations = {
     aiStatus: "सक्रिय विश्लेषक",
     aiPlaceholder: "अपने निवेश के बारे में कुछ भी पूछें...",
     aiDefaultGreeting: "नमस्ते! मैं आपका एआई निवेश सलाहकार हूं। शुरू करने के लिए नीचे दिए गए किसी भी सुझाव पर क्लिक करें या अपने होल्डिंग्स के बारे में प्रश्न पूछें!",
+    
     // Calculators
     calculators: "कैलकुलेटर",
     brokerageCalc: "ब्रोकरेज",
@@ -179,6 +196,7 @@ export const translations = {
     intradayMIS: "इंट्राडे (MIS - 5x लीवरेज)",
     marginRequiredLabel: "आवश्यक मार्जिन",
     leverageApplied: "प्रयुक्त लीवरेज",
+    
     // Alerts & Notes
     alertsNotes: "अलर्ट और नोट्स",
     priceReminders: "रिमाइंडर",
@@ -203,7 +221,19 @@ export const translations = {
     noNotes: "कोई नोट्स नहीं हैं",
     alertBannerText: "मूल्य सीमा पार हुई के लिए",
     date: "तारीख",
-    closePrice: "बंद कीमत"
+    closePrice: "बंद कीमत",
+    
+    // Ecosystem Apps
+    exploreApps: "पारिस्थितिकी तंत्र ऐप्स",
+    exploreDesc: "अपने काइट खाते के साथ एकीकृत तीसरे पक्ष के अनुप्रयोगों का पता लगाएं।",
+    connect: "कनेक्ट करें",
+    connected: "कनेक्टेड",
+    smallcaseDesc: "वित्तीय विशेषज्ञों द्वारा बनाए गए थीम-आधारित निवेश पोर्टफोलियो।",
+    sensibullDesc: "स्मार्ट टूल और सलाह के साथ भारत का सबसे बड़ा ऑप्शंस ट्रेडिंग प्लेटफॉर्म।",
+    streakDesc: "एल्गोरिथम ट्रेडिंग रणनीतियाँ बनाएं, बैकटेस्ट करें और तैनात करें।",
+    goldenpiDesc: "निश्चित आय वाले कॉर्पोरेट बॉन्ड और डिबेंचर में निवेश करें।",
+    tijoriDesc: "कॉर्पोरेट वित्तीय का मौलिक विश्लेषण और ट्रैकिंग।",
+    kiteconnectDesc: "स्वचालित ट्रेडिंग सिस्टम के लिए डेवलपर एपीआई।"
   },
   es: {
     dashboard: "Panel",
@@ -238,6 +268,7 @@ export const translations = {
     loadingKite: "Cargando Kite...",
     loadingOrders: "Cargando tus órdenes...",
     activeWatchlistCount: "elementos",
+    
     // AI Insights
     aiInsights: "Perspectivas de IA",
     askAI: "Pregunte a la IA sobre su cartera...",
@@ -249,6 +280,7 @@ export const translations = {
     aiStatus: "Analista Activo",
     aiPlaceholder: "Pregunte cualquier cosa sobre sus inversiones...",
     aiDefaultGreeting: "¡Hola! Soy su Asistente de Inversión de IA. ¡Haga clic en cualquiera de las sugerencias a continuación o escriba una consulta sobre sus tenencias para comenzar!",
+    
     // Calculators
     calculators: "Calculadoras",
     brokerageCalc: "Corretaje",
@@ -282,6 +314,7 @@ export const translations = {
     intradayMIS: "Intradía (MIS - 5x Apalancamiento)",
     marginRequiredLabel: "Margen Requerido",
     leverageApplied: "Apalancamiento",
+    
     // Alerts & Notes
     alertsNotes: "Alertas y Notas",
     priceReminders: "Recordatorios",
@@ -306,6 +339,18 @@ export const translations = {
     noNotes: "Sin notas de investigación",
     alertBannerText: "¡Alerta alcanzada para",
     date: "Fecha",
-    closePrice: "Precio Cierre"
+    closePrice: "Precio Cierre",
+    
+    // Ecosystem Apps
+    exploreApps: "Aplicaciones del Ecosistema",
+    exploreDesc: "Explore las aplicaciones de terceros integradas con su cuenta de Kite.",
+    connect: "Conectar",
+    connected: "Conectado",
+    smallcaseDesc: "Portafolios de inversión temática creados por expertos financieros.",
+    sensibullDesc: "La plataforma de negociación de opciones más grande de la India con herramientas y consejos inteligentes.",
+    streakDesc: "Cree, pruebe y despliegue estrategias de negociación algorítmica.",
+    goldenpiDesc: "Invierta en bonos corporativos de renta fija y obligaciones.",
+    tijoriDesc: "Análisis fundamental y seguimiento de las finanzas corporativas.",
+    kiteconnectDesc: "API de desarrollador para sistemas de negociación automatizados."
   }
 };
