@@ -128,6 +128,17 @@ const Menu = ({ user }) => {
               </p>
             </Link>
           </li>
+          <li>
+            <Link
+              style={{ textDecoration: "none" }}
+              to="/calculators"
+              onClick={() => handleMenuClick(7)}
+            >
+              <p className={selectedMenu === 7 ? activeMenuClass : menuClass}>
+                {t("calculators")}
+              </p>
+            </Link>
+          </li>
         </ul>
         <hr />
         <div className="profile-container">
