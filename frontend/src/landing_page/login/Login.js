@@ -1,6 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { LanguageContext } from "../LanguageContext";
+import { translations } from "../translations";
 
 function Login() {
+  const { language } = useContext(LanguageContext);
+  const t = (key) => translations[language][key] || key;
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -26,11 +31,9 @@ function Login() {
         throw new Error(data.message || "Something went wrong. Please try again.");
       }
 
-      // Store token and redirect to dashboard with token in query params
       localStorage.setItem("token", data.token);
       localStorage.setItem("username", data.username);
       
-      // Redirect to the dashboard (running on port 3001) with the token
       window.location.href = `http://localhost:3001/?token=${data.token}`;
     } catch (err) {
       setError(err.message);
@@ -45,7 +48,7 @@ function Login() {
         <div className="col-md-5 col-lg-4">
           <div className="card shadow border-0 rounded-3">
             <div className="card-body p-4 p-sm-5">
-              <h3 className="card-title text-center mb-4 fw-bold">Login to Kite</h3>
+              <h3 className="card-title text-center mb-4 fw-bold">{t("loginToKite")}</h3>
               
               {error && (
                 <div className="alert alert-danger" role="alert" style={{ fontSize: "14px" }}>
@@ -64,7 +67,7 @@ function Login() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                   />
-                  <label htmlFor="floatingEmail">Email address</label>
+                  <label htmlFor="floatingEmail">{t("emailAddress")}</label>
                 </div>
                 
                 <div className="form-floating mb-4">
@@ -77,7 +80,7 @@ function Login() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
-                  <label htmlFor="floatingPassword">Password</label>
+                  <label htmlFor="floatingPassword">{t("password")}</label>
                 </div>
 
                 <button
@@ -86,12 +89,15 @@ function Login() {
                   disabled={loading}
                   style={{ backgroundColor: "#387ed1", borderColor: "#387ed1" }}
                 >
-                  {loading ? "Logging in..." : "Login"}
+                  {loading ? t("loggingIn") : t("login")}
                 </button>
 
                 <div className="text-center">
                   <p className="text-secondary" style={{ fontSize: "14px" }}>
-                    Don't have an account? <a href="/signup" style={{ color: "#387ed1", textDecoration: "none" }}>Sign up now</a>
+                    {t("dontHaveAccount")}{" "}
+                    <a href="/signup" style={{ color: "#387ed1", textDecoration: "none" }}>
+                      {t("signupNow")}
+                    </a>
                   </p>
                 </div>
               </form>

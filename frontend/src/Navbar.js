@@ -1,10 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
+import { LanguageContext } from "./landing_page/LanguageContext";
+import { translations } from "./landing_page/translations";
 
 function Navbar() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [token, setToken] = useState("");
     const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+    const { language, setLanguage } = useContext(LanguageContext);
+
+    const t = (key) => translations[language][key] || key;
 
     useEffect(() => {
         const storedToken = localStorage.getItem("token");
@@ -51,7 +56,7 @@ function Navbar() {
                             {isLoggedIn ? (
                                 <>
                                     <li className="nav-item">
-                                        <a className="nav-link active animate-text" href={`http://localhost:3001/?token=${token}`}>Dashboard</a>
+                                        <a className="nav-link active animate-text" href={`http://localhost:3001/?token=${token}`}>{t("dashboard")}</a>
                                     </li>
                                     <li className="nav-item">
                                         <button 
@@ -59,41 +64,46 @@ function Navbar() {
                                             onClick={handleLogout}
                                             style={{ textDecoration: 'none', border: 'none', background: 'none', padding: '8px 0', verticalAlign: 'middle', cursor: 'pointer' }}
                                         >
-                                            Logout
+                                            {t("logout")}
                                         </button>
                                     </li>
                                 </>
                             ) : (
                                 <>
                                     <li className="nav-item">
-                                        <Link className="nav-link active" aria-current="page" to="/signup">Signup</Link>
+                                        <Link className="nav-link active" aria-current="page" to="/signup">{t("signup")}</Link>
                                     </li>
                                     <li className="nav-item">
-                                        <Link className="nav-link active" to="/login">Login</Link>
+                                        <Link className="nav-link active" to="/login">{t("login")}</Link>
                                     </li>
                                 </>
                             )}
                             <li className="nav-item">
-                                <Link className="nav-link active" to="/about">About</Link>
+                                <Link className="nav-link active" to="/about">{t("about")}</Link>
                             </li>
                             <li className="nav-item">
-                                <Link className="nav-link active" to="/product">Products</Link>
+                                <Link className="nav-link active" to="/product">{t("products")}</Link>
                             </li>
                             <li className="nav-item">
-                                <Link className="nav-link active" to="/pricing">Pricing</Link>
+                                <Link className="nav-link active" to="/pricing">{t("pricing")}</Link>
                             </li>
                             <li className="nav-item">
-                                <Link className="nav-link active" to="/support">Support</Link>
+                                <Link className="nav-link active" to="/support">{t("support")}</Link>
                             </li>
-                            <li className="nav-item" style={{ alignSelf: 'center', marginLeft: '40px' }}>
+                            <li className="nav-item" style={{ alignSelf: 'center', marginLeft: '40px', display: 'flex', alignItems: 'center' }}>
                                 <button 
                                     className="btn btn-link nav-link p-0 active" 
                                     onClick={toggleTheme} 
-                                    style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '1.1rem', textDecoration: 'none' }}
+                                    style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '1.1rem', textDecoration: 'none', marginRight: '20px' }}
                                     title={theme === "light" ? "Switch to Dark Mode" : "Switch to Light Mode"}
                                 >
                                     {theme === "light" ? "🌙" : "☀️"}
                                 </button>
+                                <div style={{ display: 'flex', gap: '10px', fontSize: '0.85rem', fontWeight: '500' }}>
+                                    <span style={{ cursor: 'pointer', color: language === 'en' ? '#387ed1' : '#888', fontWeight: language === 'en' ? 'bold' : '500' }} onClick={() => setLanguage('en')}>EN</span>
+                                    <span style={{ cursor: 'pointer', color: language === 'hi' ? '#387ed1' : '#888', fontWeight: language === 'hi' ? 'bold' : '500' }} onClick={() => setLanguage('hi')}>HI</span>
+                                    <span style={{ cursor: 'pointer', color: language === 'es' ? '#387ed1' : '#888', fontWeight: language === 'es' ? 'bold' : '500' }} onClick={() => setLanguage('es')}>ES</span>
+                                </div>
                             </li>
                         </ul>
                     </div>

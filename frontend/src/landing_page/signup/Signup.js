@@ -1,8 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Investment from "./Investment";
 import OpenAccount from "../../OpenAccount";
+import { LanguageContext } from "../LanguageContext";
+import { translations } from "../translations";
 
 function Signup() {
+  const { language } = useContext(LanguageContext);
+  const t = (key) => translations[language][key] || key;
+
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,11 +34,9 @@ function Signup() {
         throw new Error(data.message || "Something went wrong. Please try again.");
       }
 
-      // Save token and credentials
       localStorage.setItem("token", data.token);
       localStorage.setItem("username", data.username);
 
-      // Redirect to the dashboard (running on port 3001) with the token
       window.location.href = `http://localhost:3001/?token=${data.token}`;
     } catch (err) {
       setError(err.message);
@@ -56,9 +59,9 @@ function Signup() {
           <div className="col-md-5 col-lg-4">
             <div className="card shadow border-0 rounded-3">
               <div className="card-body p-4 p-sm-5">
-                <h3 className="card-title text-center mb-4 fw-bold">Sign up now</h3>
+                <h3 className="card-title text-center mb-4 fw-bold">{t("registerNow")}</h3>
                 <h6 className="text-secondary text-center mb-4">
-                  Or track your existing application
+                  {t("trackApplication")}
                 </h6>
 
                 {error && (
@@ -78,7 +81,7 @@ function Signup() {
                       onChange={(e) => setUsername(e.target.value)}
                       required
                     />
-                    <label htmlFor="floatingUsername">Full Name</label>
+                    <label htmlFor="floatingUsername">{t("fullName")}</label>
                   </div>
 
                   <div className="form-floating mb-3">
@@ -91,7 +94,7 @@ function Signup() {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                     />
-                    <label htmlFor="floatingEmail">Email address</label>
+                    <label htmlFor="floatingEmail">{t("emailAddress")}</label>
                   </div>
 
                   <div className="form-floating mb-4">
@@ -104,7 +107,7 @@ function Signup() {
                       onChange={(e) => setPassword(e.target.value)}
                       required
                     />
-                    <label htmlFor="floatingPassword">Password</label>
+                    <label htmlFor="floatingPassword">{t("password")}</label>
                   </div>
 
                   <button
@@ -113,15 +116,18 @@ function Signup() {
                     disabled={loading}
                     style={{ backgroundColor: "#387ed1", borderColor: "#387ed1" }}
                   >
-                    {loading ? "Registering..." : "Sign up"}
+                    {loading ? t("registering") : t("signup")}
                   </button>
 
                   <div className="text-center">
                     <p className="text-secondary" style={{ fontSize: "13px" }}>
-                      Already have an account? <a href="/login" style={{ color: "#387ed1", textDecoration: "none" }}>Log in</a>
+                      {t("alreadyHaveAccount")}{" "}
+                      <a href="/login" style={{ color: "#387ed1", textDecoration: "none" }}>
+                        {t("login")}
+                      </a>
                     </p>
                     <p className="text-secondary mt-3" style={{ fontSize: "11px" }}>
-                      By proceeding, you agree to the Zerodha terms & privacy policy.
+                      {t("agreeTerms")}
                     </p>
                   </div>
                 </form>

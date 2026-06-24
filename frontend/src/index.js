@@ -14,23 +14,26 @@ import NotFound from './landing_page/home/NotFound';
 
 import Navbar from './Navbar';
 import Footer from './Footer';
+import { LanguageProvider } from './landing_page/LanguageContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <BrowserRouter>
-    <Navbar />
-    <Routes>
-      <Route path='/' element={<HomePage />} />
-      <Route path='/signup' element={<Signup />} />
-      <Route path='/login' element={<Login />} />
-      <Route path='/about' element={<About />} />
-      <Route path='/product' element={<Products />} />
-      <Route path='/pricing' element={<Pricing />} />
-      <Route path='/support' element={<Support />} />
-      <Route path='*' element={<NotFound />} />
-    </Routes>
-    < Footer />
-  </BrowserRouter>
+  <LanguageProvider>
+    <BrowserRouter>
+      <Navbar />
+      <Routes>
+        <Route path='/' element={<HomePage />} />
+        <Route path='/signup' element={<Signup />} />
+        <Route path='/login' element={<Login />} />
+        <Route path='/about' element={<About />} />
+        <Route path='/product' element={<Products />} />
+        <Route path='/pricing' element={<Pricing />} />
+        <Route path='/support' element={<Support />} />
+        <Route path='*' element={<NotFound />} />
+      </Routes>
+      < Footer />
+    </BrowserRouter>
+  </LanguageProvider>
 );
 
 
