@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 function Navbar() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [token, setToken] = useState("");
+    const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
 
     useEffect(() => {
         const storedToken = localStorage.getItem("token");
@@ -15,6 +16,19 @@ function Navbar() {
             setToken("");
         }
     }, []);
+
+    useEffect(() => {
+        if (theme === "dark") {
+            document.body.classList.add("dark-mode");
+        } else {
+            document.body.classList.remove("dark-mode");
+        }
+        localStorage.setItem("theme", theme);
+    }, [theme]);
+
+    const toggleTheme = () => {
+        setTheme(theme === "light" ? "dark" : "light");
+    };
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -70,6 +84,16 @@ function Navbar() {
                             </li>
                             <li className="nav-item">
                                 <Link className="nav-link active" to="/support">Support</Link>
+                            </li>
+                            <li className="nav-item" style={{ alignSelf: 'center', marginLeft: '40px' }}>
+                                <button 
+                                    className="btn btn-link nav-link p-0 active" 
+                                    onClick={toggleTheme} 
+                                    style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '1.1rem', textDecoration: 'none' }}
+                                    title={theme === "light" ? "Switch to Dark Mode" : "Switch to Light Mode"}
+                                >
+                                    {theme === "light" ? "🌙" : "☀️"}
+                                </button>
                             </li>
                         </ul>
                     </div>
