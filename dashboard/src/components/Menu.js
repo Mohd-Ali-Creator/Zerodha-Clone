@@ -48,7 +48,7 @@ const Menu = ({ user }) => {
 
   return (
     <div className="menu-container">
-      <img src="logo.png" alt="Dashboard logo" style={{ width: "50px" }} />
+      <img src="/media/kite-logo.svg" alt="Dashboard logo" style={{ width: "50px" }} />
       <div className="menus">
         <ul>
           <li>
