@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
-
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
+import { LanguageContext } from "./LanguageContext";
+import { translations } from "../data/translations";
 
 const Menu = ({ user }) => {
+  const { language, setLanguage } = useContext(LanguageContext);
   const [selectedMenu, setSelectedMenu] = useState(0);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
@@ -34,10 +36,12 @@ const Menu = ({ user }) => {
     window.location.href = "http://localhost:3000/login";
   };
 
-  const username = user ? user.username : "User";
+  const t = (key) => translations[language][key] || key;
+
+  const username = user ? user.username : t("username");
   const avatarInitials = user 
     ? user.username.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
-    : "U";
+    : t("avatar");
 
   const menuClass = "menu";
   const activeMenuClass = "menu selected";
@@ -54,7 +58,7 @@ const Menu = ({ user }) => {
               onClick={() => handleMenuClick(0)}
             >
               <p className={selectedMenu === 0 ? activeMenuClass : menuClass}>
-                Dashboard
+                {t("dashboard")}
               </p>
             </Link>
           </li>
@@ -65,7 +69,7 @@ const Menu = ({ user }) => {
               onClick={() => handleMenuClick(1)}
             >
               <p className={selectedMenu === 1 ? activeMenuClass : menuClass}>
-                Orders
+                {t("orders")}
               </p>
             </Link>
           </li>
@@ -76,7 +80,7 @@ const Menu = ({ user }) => {
               onClick={() => handleMenuClick(2)}
             >
               <p className={selectedMenu === 2 ? activeMenuClass : menuClass}>
-                Holdings
+                {t("holdings")}
               </p>
             </Link>
           </li>
@@ -87,7 +91,7 @@ const Menu = ({ user }) => {
               onClick={() => handleMenuClick(3)}
             >
               <p className={selectedMenu === 3 ? activeMenuClass : menuClass}>
-                Positions
+                {t("positions")}
               </p>
             </Link>
           </li>
@@ -98,7 +102,7 @@ const Menu = ({ user }) => {
               onClick={() => handleMenuClick(4)}
             >
               <p className={selectedMenu === 4 ? activeMenuClass : menuClass}>
-                Funds
+                {t("funds")}
               </p>
             </Link>
           </li>
@@ -109,7 +113,7 @@ const Menu = ({ user }) => {
               onClick={() => handleMenuClick(5)}
             >
               <p className={selectedMenu === 5 ? activeMenuClass : menuClass}>
-                Apps
+                {t("apps")}
               </p>
             </Link>
           </li>
@@ -122,11 +126,16 @@ const Menu = ({ user }) => {
           </div>
           {isProfileDropdownOpen && (
             <div className="profile-dropdown">
+              <div style={{ display: "flex", justifyContent: "space-around", padding: "6px 12px", borderBottom: "1px solid #eee", fontSize: "0.8rem", color: "#888" }}>
+                <span style={{ cursor: "pointer", fontWeight: language === "en" ? "bold" : "normal", color: language === "en" ? "#df5b2b" : "#666" }} onClick={() => setLanguage("en")}>EN</span>
+                <span style={{ cursor: "pointer", fontWeight: language === "hi" ? "bold" : "normal", color: language === "hi" ? "#df5b2b" : "#666" }} onClick={() => setLanguage("hi")}>HI</span>
+                <span style={{ cursor: "pointer", fontWeight: language === "es" ? "bold" : "normal", color: language === "es" ? "#df5b2b" : "#666" }} onClick={() => setLanguage("es")}>ES</span>
+              </div>
               <button className="profile-dropdown-item" onClick={toggleTheme}>
-                {theme === "light" ? "🌙 Dark Mode" : "☀️ Light Mode"}
+                {theme === "light" ? `🌙 ${t("darkMode")}` : `☀️ ${t("lightMode")}`}
               </button>
               <button className="profile-dropdown-item" onClick={handleLogout}>
-                Logout
+                {t("logout")}
               </button>
             </div>
           )}

@@ -3,6 +3,7 @@ import axios from "axios";
 
 import Dashboard from "./Dashboard";
 import TopBar from "./TopBar";
+import { LanguageProvider } from "./LanguageContext";
 
 const Home = () => {
   const [user, setUser] = useState(null);
@@ -62,10 +63,10 @@ const Home = () => {
   }
 
   return (
-    <>
+    <LanguageProvider>
       <TopBar user={user} />
       <Dashboard user={user} />
-    </>
+    </LanguageProvider>
   );
 };
 

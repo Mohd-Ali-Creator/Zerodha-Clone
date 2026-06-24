@@ -1,12 +1,14 @@
 import React, { useState, useContext } from "react";
-
 import axios from "axios";
-
 import GeneralContext from "./GeneralContext";
-
+import { LanguageContext } from "./LanguageContext";
+import { translations } from "../data/translations";
 import "./BuyActionWindow.css";
 
 const BuyActionWindow = ({ uid }) => {
+  const { language } = useContext(LanguageContext);
+  const t = (key) => translations[language][key] || key;
+
   const [stockQuantity, setStockQuantity] = useState(1);
   const [stockPrice, setStockPrice] = useState(0.0);
 
@@ -47,7 +49,7 @@ const BuyActionWindow = ({ uid }) => {
       <div className="regular-order">
         <div className="inputs">
           <fieldset>
-            <legend>Qty.</legend>
+            <legend>{t("qty")}</legend>
             <input
               type="number"
               name="qty"
@@ -57,7 +59,7 @@ const BuyActionWindow = ({ uid }) => {
             />
           </fieldset>
           <fieldset>
-            <legend>Price</legend>
+            <legend>{t("price")}</legend>
             <input
               type="number"
               name="price"
@@ -71,13 +73,13 @@ const BuyActionWindow = ({ uid }) => {
       </div>
 
       <div className="buttons">
-        <span>Margin required ₹140.65</span>
+        <span>{t("marginRequired")} ₹{(stockQuantity * (stockPrice || 140.65)).toFixed(2)}</span>
         <div>
           <button className="btn btn-blue" onClick={handleBuyClick}>
-            Buy
+            {t("buy")}
           </button>
           <button className="btn btn-grey" onClick={handleCancelClick}>
-            Cancel
+            {t("cancel")}
           </button>
         </div>
       </div>

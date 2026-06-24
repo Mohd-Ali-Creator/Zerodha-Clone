@@ -13,6 +13,7 @@ const authMiddleware = require("./middleware/authMiddleware");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.JWT_SECRET || "secret_key_zerodha_clone";
+const yahooFinance = require("yahoo-finance2").default;
 
 const PORT = process.env.PORT || 3002;
 const uri = process.env.MONGO_URL;
@@ -199,6 +200,67 @@ app.get("/allHoldings", async (req, res) => {
 app.get("/allPositions", async (req, res) => {
   let allPositions = await PositionsModel.find({});
   res.json(allPositions);
+});
+
+const tickerMap = {
+  INFY: "INFY.NS",
+  ONGC: "ONGC.NS",
+  TCS: "TCS.NS",
+  KPITTECH: "KPITTECH.NS",
+  QUICKHEAL: "QUICKHEAL.NS",
+  WIPRO: "WIPRO.NS",
+  "M&M": "M&M.NS",
+  RELIANCE: "RELIANCE.NS",
+  HUL: "HINDUNILVR.NS",
+  SBIN: "SBIN.NS",
+  HDFCBANK: "HDFCBANK.NS",
+  BHARTIARTL: "BHARTIARTL.NS",
+  TATAPOWER: "TATAPOWER.NS",
+  ITC: "ITC.NS"
+};
+
+app.get("/prices", async (req, res) => {
+  try {
+    const { symbols } = req.query;
+    if (!symbols) {
+      return res.status(400).json({ message: "Symbols parameter is required" });
+    }
+
+    const symbolList = symbols.split(",");
+    const results = {};
+
+    await Promise.all(
+      symbolList.map(async (symbol) => {
+        const uppercaseSymbol = symbol.toUpperCase();
+        const yahooTicker = tickerMap[uppercaseSymbol] || `${uppercaseSymbol}.NS`;
+        
+        try {
+          const quote = await yahooFinance.quote(yahooTicker);
+          if (quote) {
+            results[uppercaseSymbol] = {
+              price: quote.regularMarketPrice,
+              percent: quote.regularMarketChangePercent 
+                ? `${quote.regularMarketChangePercent.toFixed(2)}%` 
+                : "0.00%",
+              isDown: quote.regularMarketChangePercent < 0,
+            };
+          }
+        } catch (error) {
+          console.error(`Error fetching quote for ${yahooTicker}:`, error.message);
+          results[uppercaseSymbol] = {
+            price: 100.0,
+            percent: "0.00%",
+            isDown: false,
+          };
+        }
+      })
+    );
+
+    res.json(results);
+  } catch (error) {
+    console.error("Prices fetch error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 });
 
 app.post("/newOrder", authMiddleware, async (req, res) => {

@@ -1,8 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { LanguageContext } from "./LanguageContext";
+import { translations } from "../data/translations";
 
 const Orders = () => {
+  const { language } = useContext(LanguageContext);
+  const t = (key) => translations[language][key] || key;
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -27,7 +32,7 @@ const Orders = () => {
   if (loading) {
     return (
       <div className="orders" style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "50vh" }}>
-        <p>Loading your orders...</p>
+        <p>{t("loadingOrders")}</p>
       </div>
     );
   }
@@ -36,22 +41,22 @@ const Orders = () => {
     <div className="orders">
       {orders.length === 0 ? (
         <div className="no-orders">
-          <p>You haven't placed any orders today</p>
+          <p>{t("noOrders")}</p>
           <Link to={"/"} className="btn">
-            Get started
+            {t("getStarted")}
           </Link>
         </div>
       ) : (
         <div className="order-table">
-          <h3 className="title">Orders ({orders.length})</h3>
+          <h3 className="title">{t("ordersTitle")} ({orders.length})</h3>
           <table>
             <thead>
               <tr>
-                <th>Type</th>
-                <th>Instrument</th>
-                <th>Qty.</th>
-                <th>Price</th>
-                <th>Time</th>
+                <th>{t("type")}</th>
+                <th>{t("instrument")}</th>
+                <th>{t("qty")}</th>
+                <th>{t("price")}</th>
+                <th>{t("time")}</th>
               </tr>
             </thead>
             <tbody>

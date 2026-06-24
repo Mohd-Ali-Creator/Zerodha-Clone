@@ -1,5 +1,7 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import GeneralContext from "./GeneralContext";
+import { LanguageContext } from "./LanguageContext";
+import { translations } from "../data/translations";
 import { Tooltip, Grow } from "@mui/material";
 import {
   KeyboardArrowDown,
@@ -8,6 +10,7 @@ import {
 } from "@mui/icons-material";
 import { watchlist } from "../data/data";
 import { DoughnutChart } from "./DoughnoutChart";
+import axios from "axios";
 
 const allStocks = [
   { name: "INFY", price: 1555.45, percent: "-1.60%", isDown: true },
@@ -27,8 +30,47 @@ const allStocks = [
 ];
 
 const WatchList = () => {
+  const { language } = useContext(LanguageContext);
+  const t = (key) => translations[language][key] || key;
+
   const [searchQuery, setSearchQuery] = useState("");
   const [activeWatchlist, setActiveWatchlist] = useState(watchlist);
+
+  // Poll prices for watchlist items from backend every 15 seconds
+  useEffect(() => {
+    const fetchPrices = () => {
+      if (activeWatchlist.length === 0) return;
+
+      const symbols = activeWatchlist.map((stock) => stock.name).join(",");
+      axios
+        .get(`http://localhost:3002/prices?symbols=${symbols}`)
+        .then((res) => {
+          const pricesData = res.data;
+          setActiveWatchlist((prevWatchlist) =>
+            prevWatchlist.map((stock) => {
+              const liveData = pricesData[stock.name.toUpperCase()];
+              if (liveData) {
+                return {
+                  ...stock,
+                  price: liveData.price,
+                  percent: liveData.percent,
+                  isDown: liveData.isDown,
+                };
+              }
+              return stock;
+            })
+          );
+        })
+        .catch((err) => {
+          console.error("Error fetching live prices:", err);
+        });
+    };
+
+    fetchPrices();
+
+    const interval = setInterval(fetchPrices, 15000);
+    return () => clearInterval(interval);
+  }, [activeWatchlist.length]);
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -54,7 +96,7 @@ const WatchList = () => {
     labels,
     datasets: [
       {
-        label: "Price",
+        label: t("price"),
         data: activeWatchlist.map((stock) => stock.price),
         backgroundColor: [
           "rgba(255, 99, 132, 0.5)",
@@ -84,7 +126,7 @@ const WatchList = () => {
           type="text"
           name="search"
           id="search"
-          placeholder="Search eg:infy, bse, nifty fut weekly, gold mcx"
+          placeholder={t("searchPlaceholder")}
           className="search"
           value={searchQuery}
           onChange={handleSearchChange}
@@ -103,6 +145,7 @@ const WatchList = () => {
                 isAdded={isAdded}
                 onAdd={() => handleAddToWatchlist(stock)}
                 onRemove={() => handleRemoveFromWatchlist(stock.name)}
+                t={t}
               />
             );
           })
@@ -113,6 +156,7 @@ const WatchList = () => {
                 stock={stock}
                 key={index}
                 onRemove={() => handleRemoveFromWatchlist(stock.name)}
+                t={t}
               />
             );
           })
@@ -126,7 +170,7 @@ const WatchList = () => {
 
 export default WatchList;
 
-const SearchItem = ({ stock, isAdded, onAdd, onRemove }) => {
+const SearchItem = ({ stock, isAdded, onAdd, onRemove, t }) => {
   const [showWatchlistActions, setShowWatchlistActions] = useState(false);
 
   return (
@@ -155,7 +199,7 @@ const SearchItem = ({ stock, isAdded, onAdd, onRemove }) => {
                 style={{ fontSize: "0.75rem", padding: "4px 8px", width: "auto", height: "auto" }}
                 onClick={onRemove}
               >
-                Remove
+                {t("remove")}
               </button>
             ) : (
               <button
@@ -163,7 +207,7 @@ const SearchItem = ({ stock, isAdded, onAdd, onRemove }) => {
                 style={{ fontSize: "0.75rem", padding: "4px 8px", width: "auto", height: "auto" }}
                 onClick={onAdd}
               >
-                Add
+                {t("add")}
               </button>
             )}
           </span>
@@ -173,7 +217,7 @@ const SearchItem = ({ stock, isAdded, onAdd, onRemove }) => {
   );
 };
 
-const WatchListItem = ({ stock, onRemove }) => {
+const WatchListItem = ({ stock, onRemove, t }) => {
   const [showWatchlistActions, setShowWatchlistActions] = useState(false);
 
   const handleMouseEnter = (e) => {
@@ -199,13 +243,13 @@ const WatchListItem = ({ stock, onRemove }) => {
         </div>
       </div>
       {showWatchlistActions && (
-        <WatchListActions uid={stock.name} onRemove={onRemove} />
+        <WatchListActions uid={stock.name} onRemove={onRemove} t={t} />
       )}
     </li>
   );
 };
 
-const WatchListActions = ({ uid, onRemove }) => {
+const WatchListActions = ({ uid, onRemove, t }) => {
   const generalContext = useContext(GeneralContext);
 
   const handleBuyClick = () => {
@@ -216,16 +260,16 @@ const WatchListActions = ({ uid, onRemove }) => {
     <span className="actions">
       <span>
         <Tooltip
-          title="Buy (B)"
+          title={`${t("buy")} (B)`}
           placement="top"
           arrow
           TransitionComponent={Grow}
           onClick={handleBuyClick}
         >
-          <button className="buy">Buy</button>
+          <button className="buy">{t("buy")}</button>
         </Tooltip>
         <Tooltip
-          title="Delete (D)"
+          title={`${t("remove")} (D)`}
           placement="top"
           arrow
           TransitionComponent={Grow}
