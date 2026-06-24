@@ -31,7 +31,18 @@ export const translations = {
     marginAvailable: "Margin available",
     loadingKite: "Loading Kite...",
     loadingOrders: "Loading your orders...",
-    activeWatchlistCount: "items"
+    activeWatchlistCount: "items",
+    // AI Insights
+    aiInsights: "AI Insights",
+    askAI: "Ask AI about your portfolio...",
+    send: "Send",
+    suggestion1: "Analyze my portfolio",
+    suggestion2: "Should I sell INFY?",
+    suggestion3: "What is my best performing stock?",
+    aiTitle: "AI Portfolio Assistant",
+    aiStatus: "Active Analyser",
+    aiPlaceholder: "Ask anything about your investments...",
+    aiDefaultGreeting: "Hello! I am your AI Investment Advisor. Click on any suggestion below or type a query about your holdings to get started!"
   },
   hi: {
     dashboard: "डैशबोर्ड",
@@ -65,7 +76,18 @@ export const translations = {
     marginAvailable: "उपलब्ध मार्जिन",
     loadingKite: "काइट लोड हो रहा है...",
     loadingOrders: "आपके ऑर्डर लोड हो रहे हैं...",
-    activeWatchlistCount: "शेयर"
+    activeWatchlistCount: "शेयर",
+    // AI Insights
+    aiInsights: "एआई इनसाइट्स",
+    askAI: "अपने पोर्टफोलियो के बारे में एआई से पूछें...",
+    send: "भेजें",
+    suggestion1: "मेरे पोर्टफोलियो का विश्लेषण करें",
+    suggestion2: "क्या मुझे INFY बेचना चाहिए?",
+    suggestion3: "मेरा सबसे अच्छा प्रदर्शन करने वाला शेयर कौन सा है?",
+    aiTitle: "एआई पोर्टफोलियो सहायक",
+    aiStatus: "सक्रिय विश्लेषक",
+    aiPlaceholder: "अपने निवेश के बारे में कुछ भी पूछें...",
+    aiDefaultGreeting: "नमस्ते! मैं आपका एआई निवेश सलाहकार हूं। शुरू करने के लिए नीचे दिए गए किसी भी सुझाव पर क्लिक करें या अपने होल्डिंग्स के बारे में प्रश्न पूछें!"
   },
   es: {
     dashboard: "Panel",
@@ -99,6 +121,17 @@ export const translations = {
     marginAvailable: "Margen disponible",
     loadingKite: "Cargando Kite...",
     loadingOrders: "Cargando tus órdenes...",
-    activeWatchlistCount: "elementos"
+    activeWatchlistCount: "elementos",
+    // AI Insights
+    aiInsights: "Perspectivas de IA",
+    askAI: "Pregunte a la IA sobre su cartera...",
+    send: "Enviar",
+    suggestion1: "Analizar mi cartera",
+    suggestion2: "¿Debería vender INFY?",
+    suggestion3: "¿Cuál es mi acción con mejor rendimiento?",
+    aiTitle: "Asistente de Cartera de IA",
+    aiStatus: "Analista Activo",
+    aiPlaceholder: "Pregunte cualquier cosa sobre sus inversiones...",
+    aiDefaultGreeting: "¡Hola! Soy su Asistente de Inversión de IA. ¡Haga clic en cualquiera de las sugerencias a continuación o escriba una consulta sobre sus tenencias para comenzar!"
   }
 };

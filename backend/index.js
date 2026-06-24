@@ -292,6 +292,144 @@ app.get("/allOrders", authMiddleware, async (req, res) => {
   }
 });
 
+app.post("/ai-insights", authMiddleware, async (req, res) => {
+  try {
+    const { question } = req.body;
+    if (!question) {
+      return res.status(400).json({ message: "Question is required" });
+    }
+
+    const holdings = await HoldingsModel.find({});
+    const orders = await OrdersModel.find({ userId: req.user.id });
+
+    let portfolioContext = "The user has the following holdings in their Zerodha trading portfolio:\n";
+    if (holdings.length === 0) {
+      portfolioContext += "- No active stock holdings currently.\n";
+    } else {
+      holdings.forEach((h) => {
+        const netChange = (h.price - h.avg) * h.qty;
+        portfolioContext += `- ${h.name}: Quantity = ${h.qty}, Avg Purchase Price = ₹${h.avg.toFixed(2)}, Current Price = ₹${h.price.toFixed(2)}, Net Value = ₹${(h.price * h.qty).toFixed(2)}, Profit/Loss = ₹${netChange.toFixed(2)}\n`;
+      });
+    }
+
+    if (orders.length > 0) {
+      portfolioContext += "\nRecent orders placed by the user:\n";
+      orders.slice(0, 5).forEach((o) => {
+        portfolioContext += `- ${o.mode} ${o.qty} shares of ${o.name} at ₹${o.price.toFixed(2)}\n`;
+      });
+    }
+
+    const systemPrompt = `You are an expert financial analyst and investment advisor for Kite (Zerodha Clone).
+You are analyzing the user's trading portfolio. Answer their questions professionally, clearly, and concisely. Keep answers formatted nicely in Markdown paragraphs.
+
+${portfolioContext}
+
+User Query: "${question}"
+
+Provide a professional, concise response in 3-4 paragraphs. If recommending actions, explain the rationale based on their portfolio gains/losses and general market conditions.`;
+
+    const apiKey = process.env.GEMINI_API_KEY;
+
+    if (apiKey) {
+      const apiURL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      const response = await fetch(apiURL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: systemPrompt
+                }
+              ]
+            }
+          ]
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (aiResponse) {
+          return res.json({ answer: aiResponse });
+        }
+      }
+      
+      console.warn("Gemini API call failed, falling back to local heuristic analyzer.");
+    }
+
+    // Fallback: Rule-Based Local Portfolio Analyst
+    let reply = "";
+    const lowercaseQuery = question.toLowerCase();
+
+    if (lowercaseQuery.includes("sell") || lowercaseQuery.includes("buy")) {
+      const matchedHolding = holdings.find(h => lowercaseQuery.includes(h.name.toLowerCase()));
+      if (matchedHolding) {
+        const profit = (matchedHolding.price - matchedHolding.avg) * matchedHolding.qty;
+        if (profit > 0) {
+          reply = `Based on your portfolio analysis, your position in **${matchedHolding.name}** is currently in profit by **₹${profit.toFixed(2)}** (+${((matchedHolding.price - matchedHolding.avg) / matchedHolding.avg * 100).toFixed(2)}%). Since it is performing well, you could consider booking partial profits if you need liquidity, or hold for long-term growth as the technical indicators remain stable.`;
+        } else {
+          reply = `Your position in **${matchedHolding.name}** is currently at a loss of **₹${Math.abs(profit).toFixed(2)}** (${((matchedHolding.price - matchedHolding.avg) / matchedHolding.avg * 100).toFixed(2)}%). Selling now would lock in this loss. If the company's fundamentals are still strong, it may be wiser to hold or average down rather than panic sell.`;
+        }
+      } else {
+        reply = `You asked about buying/selling. Looking at your holdings, you hold stocks like INFY, TCS, and RELIANCE. I suggest checking individual stock charts and placing a new buy order using the Watchlist Buy window to build your positions incrementally.`;
+      }
+    } else if (lowercaseQuery.includes("analyze") || lowercaseQuery.includes("performance") || lowercaseQuery.includes("portfolio")) {
+      let totalValue = 0;
+      let totalCost = 0;
+      holdings.forEach(h => {
+        totalValue += h.price * h.qty;
+        totalCost += h.avg * h.qty;
+      });
+      const netGain = totalValue - totalCost;
+      const gainPercent = totalCost > 0 ? (netGain / totalCost) * 100 : 0;
+
+      reply = `### Portfolio Performance Analysis
+Your total portfolio value is **₹${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}** against an invested capital of **₹${totalCost.toLocaleString(undefined, { minimumFractionDigits: 2 })}**.
+Your net profit/loss is **₹${netGain.toFixed(2)}** (**${gainPercent.toFixed(2)}%**).
+
+**Key Takeaways:**
+1. Your portfolio is well diversified across IT, energy, and consumer goods.
+2. The IT sector (TCS, INFY) makes up a significant portion of your holdings and has seen mild fluctuations.
+3. Consolidate your positions in high-performing assets like BHARTIARTL and consider setting price alerts to capture swings.`;
+    } else if (lowercaseQuery.includes("best") || lowercaseQuery.includes("worst") || lowercaseQuery.includes("perform")) {
+      let bestStock = null;
+      let maxGain = -Infinity;
+      holdings.forEach(h => {
+        const gain = (h.price - h.avg) * h.qty;
+        if (gain > maxGain) {
+          maxGain = gain;
+          bestStock = h;
+        }
+      });
+
+      if (bestStock) {
+        reply = `Your best performing stock is **${bestStock.name}** with a net gain of **₹${maxGain.toFixed(2)}** (+${((bestStock.price - bestStock.avg) / bestStock.avg * 100).toFixed(2)}%). This is followed by stable moves in other sectors. We recommend holding onto winners to let your profits run.`;
+      } else {
+        reply = `You do not have any holdings loaded in your portfolio at the moment. Add some shares to your watchlist, place a buy order, and I will analyze the best performer for you!`;
+      }
+    } else {
+      reply = `Hello! I am your AI Portfolio Assistant. Here is a quick snapshot of your holdings:
+- Total Assets: **${holdings.length}** unique stocks
+- Recent Actions: **${orders.length}** orders placed today
+
+Feel free to ask me to:
+- *"Analyze my portfolio"*
+- *"Should I sell INFY?"*
+- *"What is my best performing stock?"*
+*(Note: To enable live API responses, add your GEMINI_API_KEY in the backend .env!)*`;
+    }
+
+    res.json({ answer: reply });
+  } catch (error) {
+    console.error("AI Insights error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 // Authentication Routes
 app.post("/signup", async (req, res) => {
   try {

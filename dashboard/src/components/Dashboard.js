@@ -4,11 +4,11 @@ import { Route, Routes } from "react-router-dom";
 import Apps from "./Apps";
 import Funds from "./Funds";
 import Holdings from "./Holdings";
-
 import Orders from "./Order";
 import Positions from "./Positions";
 import Summary from "./Summery";
 import WatchList from "./WatchList";
+import AIInsights from "./AIInsights";
 import { GeneralContextProvider } from "./GeneralContext";
 
 const Dashboard = () => {
@@ -25,6 +25,7 @@ const Dashboard = () => {
           <Route path="/positions" element={<Positions />} />
           <Route path="/funds" element={<Funds />} />
           <Route path="/apps" element={<Apps />} />
+          <Route path="/ai-insights" element={<AIInsights />} />
         </Routes>
       </div>
     </div>

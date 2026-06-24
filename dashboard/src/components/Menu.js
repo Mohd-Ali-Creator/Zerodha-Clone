@@ -117,6 +117,17 @@ const Menu = ({ user }) => {
               </p>
             </Link>
           </li>
+          <li>
+            <Link
+              style={{ textDecoration: "none" }}
+              to="/ai-insights"
+              onClick={() => handleMenuClick(6)}
+            >
+              <p className={selectedMenu === 6 ? activeMenuClass : menuClass}>
+                {t("aiInsights")}
+              </p>
+            </Link>
+          </li>
         </ul>
         <hr />
         <div className="profile-container">
