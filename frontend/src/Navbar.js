@@ -1,10 +1,30 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-
 function Navbar() {
-    return (
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [token, setToken] = useState("");
 
+    useEffect(() => {
+        const storedToken = localStorage.getItem("token");
+        if (storedToken) {
+            setIsLoggedIn(true);
+            setToken(storedToken);
+        } else {
+            setIsLoggedIn(false);
+            setToken("");
+        }
+    }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("username");
+        setIsLoggedIn(false);
+        setToken("");
+        window.location.reload();
+    };
+
+    return (
         <div className='container'>
             <nav className="navbar navbar-expand-lg border-bottom">
                 <div className="container">
@@ -14,9 +34,31 @@ function Navbar() {
                     </button>
                     <div className="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li className="nav-item">
-                                <Link className="nav-link active" aria-current="page" to="/signup">Signup</Link>
-                            </li>
+                            {isLoggedIn ? (
+                                <>
+                                    <li className="nav-item">
+                                        <a className="nav-link active animate-text" href={`http://localhost:3001/?token=${token}`}>Dashboard</a>
+                                    </li>
+                                    <li className="nav-item">
+                                        <button 
+                                            className="nav-link active btn btn-link" 
+                                            onClick={handleLogout}
+                                            style={{ textDecoration: 'none', border: 'none', background: 'none', padding: '8px 0', verticalAlign: 'middle', cursor: 'pointer' }}
+                                        >
+                                            Logout
+                                        </button>
+                                    </li>
+                                </>
+                            ) : (
+                                <>
+                                    <li className="nav-item">
+                                        <Link className="nav-link active" aria-current="page" to="/signup">Signup</Link>
+                                    </li>
+                                    <li className="nav-item">
+                                        <Link className="nav-link active" to="/login">Login</Link>
+                                    </li>
+                                </>
+                            )}
                             <li className="nav-item">
                                 <Link className="nav-link active" to="/about">About</Link>
                             </li>
@@ -34,8 +76,6 @@ function Navbar() {
                 </div>
             </nav>
         </div>
-
-
     );
 }
 

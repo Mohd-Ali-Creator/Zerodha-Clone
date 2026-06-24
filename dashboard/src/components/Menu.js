@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { Link } from "react-router-dom";
 
-const Menu = () => {
+const Menu = ({ user }) => {
   const [selectedMenu, setSelectedMenu] = useState(0);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
 
@@ -10,9 +10,20 @@ const Menu = () => {
     setSelectedMenu(index);
   };
 
-  const handleProfileClick = (index) => {
+  const handleProfileClick = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
   };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    window.location.href = "http://localhost:3000/login";
+  };
+
+  const username = user ? user.username : "User";
+  const avatarInitials = user 
+    ? user.username.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
+    : "U";
 
   const menuClass = "menu";
   const activeMenuClass = "menu selected";
@@ -90,9 +101,18 @@ const Menu = () => {
           </li>
         </ul>
         <hr />
-        <div className="profile" onClick={handleProfileClick}>
-          <div className="avatar">ZU</div>
-          <p className="username">USERID</p>
+        <div className="profile-container">
+          <div className="profile" onClick={handleProfileClick}>
+            <div className="avatar">{avatarInitials}</div>
+            <p className="username">{username}</p>
+          </div>
+          {isProfileDropdownOpen && (
+            <div className="profile-dropdown">
+              <button className="profile-dropdown-item" onClick={handleLogout}>
+                Logout
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
